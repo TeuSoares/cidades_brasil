@@ -1,0 +1,38 @@
+*{
+    padding: 0;
+    margin: 0;
+}
+.nav-link{
+    color: #fff;
+}
+.nav-link:hover{
+    color: #b4b2b2;
+}
+.link-estado{
+    color: rgb(153, 23, 23); 
+}
+.link-estado:hover{
+    color: #ffffff;
+}
+
+@media screen and (max-width:500px){
+    .thead-dark th{
+        font-size: .8em;
+    }
+    tbody tr td{
+        font-size: .9em;
+    }
+    .col-12{
+        overflow-x: scroll;
+    }
+}
+
+/* CSS Mapa */
+
+#svg-map path { fill:#18c930 }
+#svg-map text { fill:#fff; font:12px Arial-BoldMT, sans-serif; cursor:pointer }
+#svg-map a{ text-decoration:none }
+#svg-map a:hover { cursor:pointer; text-decoration:none }
+#svg-map a:hover path{ fill:#14a82c !important }
+#svg-map .circle { fill:#197929 }
+#svg-map a:hover .circle { fill:#a0b81c !important; cursor:pointer }
