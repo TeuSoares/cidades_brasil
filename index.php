@@ -1,8 +1,8 @@
 <?php
 include("conexao.php");
+$conexao = con_mysql();
 
-$sql = "SELECT uf,estado,cidades FROM estados;";
-$resultado = $conexao->query($sql);  
+$palavra = "";
 
 $tabela = "
 <table class='table'>
@@ -26,34 +26,38 @@ $tabela2 = "
     </thead>   
 ";
 
-$palavra = "";
-
 if(isset($_POST["palavra"])){
 
     $palavra = $_POST["palavra"];
-    $sql2 = "SELECT uf,estado,cidades FROM estados WHERE estado = '$palavra';";
-    $resultado2 = $conexao->query($sql2);  
+    $sql2 = "SELECT uf,estado,cidades FROM estados WHERE estado = :estado";
+    $resultado2 = $conexao->prepare($sql2); 
+    $resultado2->bindParam(':estado', $palavra, PDO::PARAM_STR);
+    $resultado2->execute();
    
-    while($linha = mysqli_fetch_array($resultado2)){
+    while($linha = $resultado2->fetch(PDO::FETCH_ASSOC)){
         $uf = $linha["uf"];        
         $estado = $linha["estado"];
         $cidade = $linha["cidades"];
 
-    $tabela2.="
-        <tbody>
-            <tr>
-            <th scope='row'>1</th>
-            <td><a class='text-danger' href='estado.php?uf=$uf'>$estado</a></td>
-            <td>$cidade</td>
-            </tr>
-        </tbody>
-    ";
+        $tabela2.="
+            <tbody>
+                <tr>
+                <th scope='row'>1</th>
+                <td><a class='text-danger' href='estado.php?uf=$uf'>$estado</a></td>
+                <td>$cidade</td>
+                </tr>
+            </tbody>
+        ";
 
     }
    
 }
 
-while($linha = mysqli_fetch_array($resultado)){  
+$sql = "SELECT uf,estado,cidades FROM estados;";
+$resultado = $conexao->prepare($sql); 
+$resultado->execute();
+
+while($linha = $resultado->fetch(PDO::FETCH_ASSOC)){
     $uf = $linha["uf"];        
     $estado = $linha["estado"];
     $cidade = $linha["cidades"];
@@ -62,23 +66,21 @@ while($linha = mysqli_fetch_array($resultado)){
         $tabela = "";
     }else{
         $tabela.="
-    <tbody>
-        <tr>
-        <th scope='row'>$uf</th>
-        <td><a class='text-danger' href='estado.php?uf=$uf'>$estado</a></td>
-        <td>$cidade</td>
-        </tr>
-    </tbody>
-    ";
-    $tabela2 = "";
+            <tbody>
+                <tr>
+                <th scope='row'>$uf</th>
+                <td><a class='text-danger' href='estado.php?uf=$uf'>$estado</a></td>
+                <td>$cidade</td>
+                </tr>
+            </tbody>
+        ";
+        $tabela2 = "";
     }
 
 }
 
 $tabela.="</table>";
 $tabela2.="</table>";
-
-$conexao->close();
 ?>
 <!DOCTYPE html>
 <html>
@@ -87,38 +89,32 @@ $conexao->close();
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Cidades do Brasil</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!--Import CSS-->
-    <link rel="stylesheet" href="css/bootstrap.css">
-    <link rel="stylesheet" href="style.css">
-    <script src="https://kit.fontawesome.com/c4c99ec63b.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
     <body>
-        <header>
-            <ul class="nav justify-content-center bg-dark py-2">
-                <li class="nav-item">
-                    <a class="nav-link active" href="index.php">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="estado-mapa.php">Mapa</a>
-                </li>
-            </ul>
-        </header> <!--FIM Header-->
+        <?php include("navbar.php"); ?>
         
         <section class="servicos bg-light pt-4 pb-2 text-center">
             <div class="container">
                 <div class="col-md-12">
                     <div class="row">
-                        <div class="alert alert-success bg-dark text-white" role="alert">
+                        <div class="alert alert-success bg-dark text-white col-12" role="alert">
                             <h4 class="alert-heading">Cidades e Estados do Brasil</h4>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas id ullamcorper lorem. Quisque gravida tempor pulvinar. Curabitur lectus risus, elementum nec elit non, hendrerit consectetur orci. </p>
+                            <p>
+                                Projeto realizado no Senac de Limeira: 
+                                <button type="button" class="btn btn-link">
+                                    <a href="https://github.com/TeuSoares/cidades_brasil">Repositório GitHub</a>
+                                </button>
+                            </p>
                         </div>
                         
-                            <nav class="navbar navbar-light bg-light mt-3 mb-2">
-                                <form class="form-inline" method="POST">
-                                    <input name="palavra" class="form-control mr-sm-2" type="search" placeholder="Digite o estado desejado" aria-label="Pesquisar" value="<?php echo $palavra; ?>">
-                                    <button name="acaobuscar" class="btn btn-outline-success my-2 my-sm-0" type="submit">Pesquisar</button>
-                                </form>
-                            </nav>
+                        <nav class="navbar navbar-light bg-light mt-3 mb-2">
+                            <form class="form-inline" method="POST">
+                                <input name="palavra" class="form-control mr-sm-2" type="search" placeholder="Digite o estado desejado" aria-label="Pesquisar" value="<?php echo $palavra; ?>">
+                                <button name="acaobuscar" class="btn btn-outline-success my-2 my-sm-0" type="submit">Pesquisar</button>
+                            </form>
+                        </nav>
                             
                         <?php echo $tabela; ?> 
                         <?php echo $tabela2; ?> 
@@ -126,9 +122,5 @@ $conexao->close();
                 </div>     
             </div>
         </section>
-      
-
-        <script src="js/jquery.js"> </script>
-        <script src="js/bootstrap.js"></script>
     </body>
 </html>

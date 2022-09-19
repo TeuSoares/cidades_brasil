@@ -1,5 +1,6 @@
 <?php
 include("conexao.php");
+$conexao = con_mysql();
 
 $uf = "";
 $cidade = "";
@@ -17,11 +18,12 @@ if(isset($_GET["uf"])){             // Existe?
     FROM cidades as c
     INNER JOIN estados as e
     on c.uf = e.uf
-    WHERE e.uf=('$uf');";
-    $resultado = $conexao->query($sql);  
+    WHERE e.uf=(:uf);"; 
+    $resultado = $conexao->prepare($sql); 
+    $resultado ->bindParam(':uf', $uf, PDO::PARAM_STR);
+    $resultado->execute();
 
-
-    while($linha = mysqli_fetch_array($resultado)){  
+    while($linha = $resultado->fetch(PDO::FETCH_ASSOC)){  
         $codigo = $linha["codigo"];     
         $estado = $linha["estado"];
         $cidade = $linha["cidade"];
@@ -53,10 +55,13 @@ if(isset($_GET["uf"])){             // Existe?
         FROM cidades as c
         INNER JOIN estados as e
         on c.uf = e.uf
-        WHERE e.uf=('$uf') and c.cidade=('$pesquisar');";
-        $resultado2 = $conexao->query($sql2); 
+        WHERE e.uf=(:uf) and c.cidade=(:pesquisar);";
+        $resultado2 = $conexao->prepare($sql2); 
+        $resultado2->bindParam(':uf', $uf, PDO::PARAM_STR);
+        $resultado2->bindParam(':pesquisar', $pesquisar, PDO::PARAM_STR);
+        $resultado2->execute();
 
-        while($linha = mysqli_fetch_array($resultado2)){  
+        while($linha = $resultado2->fetch(PDO::FETCH_ASSOC)){  
             $codigo = $linha["codigo"];     
             $estado = $linha["estado"];
             $cidade = $linha["cidade"];
@@ -86,22 +91,11 @@ if(isset($_GET["uf"])){             // Existe?
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Cidades do Brasil</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!--Import CSS-->
-    <link rel="stylesheet" href="css/bootstrap.css">
-    <link rel="stylesheet" href="style.css">
-    <script src="https://kit.fontawesome.com/c4c99ec63b.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
     <body>
-        <header>
-            <ul class="nav justify-content-center bg-dark py-2">
-                <li class="nav-item">
-                    <a class="nav-link active" href="index.php">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="estado-mapa.php">Mapa</a>
-                </li>
-            </ul>
-        </header> <!--FIM Header-->
+        <?php include("navbar.php"); ?>
 
         <section class="servicos bg-light pt-4 pb-2 text-center">
             <div class="container">
@@ -109,7 +103,12 @@ if(isset($_GET["uf"])){             // Existe?
                     <div class="row">
                         <div class="alert alert-danger text-dark mb-4 col-md-12 py-4" role="alert">
                             <h1 class='mt-4 mb-4 display-4'>Estado <?php echo $estado; ?></h1> 
-                            <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Cupiditate ea, voluptas facilis, modi asperiores corporis ex vitae dicta ab sed assumenda quisquam, reiciendis officia similique. Numquam maxime quos tempora hic?</p>
+                            <p>
+                                Projeto realizado no Senac de Limeira: 
+                                <button type="button" class="btn btn-link">
+                                    <a href="https://github.com/TeuSoares/cidades_brasil">Repositório GitHub</a>
+                                </button>
+                            </p>
                         </div>
                         <div class="container">
                             <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
@@ -147,9 +146,7 @@ if(isset($_GET["uf"])){             // Existe?
                 </div>     
             </div>
         </section>
-      
-
-        <script src="js/jquery.js"> </script>
-        <script src="js/bootstrap.js"></script>
+        <script src="js/jquery.js"></script>
+        <script src="js/bootstrap.min.js"></script>
     </body>
 </html>

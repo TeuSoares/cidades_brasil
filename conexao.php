@@ -1,14 +1,24 @@
 <?php
-// Associando ao Banco de dados
 
-$servidor = "localhost";      // Nome ou IP do servido. Onde está?
-$usuario = "root";
-$senha = "";
-$banco = "limeiraweb_mateus";
-$conexao = new mysqli($servidor,$usuario,$senha,$banco);   // Criando conexão com o banco
-mysqli_query($conexao,"SET NAMES 'utf8'");  
-mysqli_query($conexao,'SET character_set_connection=utf8');  
-mysqli_query($conexao,'SET character_set_client=utf8');  
-mysqli_query($conexao,'SET character_set_results=utf8');
+function  con_mysql(){
+    $host = "localhost";
+    $dbname = "db_cidadesBrasil";
+    $username = "root";
+    $password = "";
+
+    try{
+        $conn = new PDO("mysql:host=$host;dbname=$dbname",
+        $username,
+        $password
+        );
+        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $conn->exec("SET CHARACTER SET utf8mb4");
+
+        return $conn;
+    }catch(PDOException $e){
+        echo 'ERROR: ' . $e->getMessage();
+    }
+
+}
 
 ?>

@@ -1,10 +1,10 @@
 <?php
 include("conexao.php");
+$conexao = con_mysql();
 
-$sql = "SELECT uf,estado,cidades FROM estados;";
-$resultado = $conexao->query($sql);  
-
-$conexao->close();
+$sql = "SELECT uf,estado,cidades FROM estados;"; 
+$resultado = $conexao->prepare($sql); 
+$resultado->execute();
 ?>
 <!doctype html>
 <html lang="pt-br">
@@ -13,28 +13,22 @@ $conexao->close();
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Cidades do Brasil</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!--Import CSS-->
-    <link rel="stylesheet" href="css/bootstrap.css">
-    <link rel="stylesheet" href="style.css">
-    <script src="https://kit.fontawesome.com/c4c99ec63b.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <header>
-        <ul class="nav justify-content-center bg-dark py-2">
-            <li class="nav-item">
-                <a class="nav-link active" href="index.php">Home</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="estado-mapa.php">Mapa</a>
-            </li>
-        </ul>
-    </header> <!--FIM Header-->
+    <?php include("navbar.php"); ?>
 
     <section class="servicos bg-light pt-4 pb-2 text-center">
         <div class="container">
-            <div class="alert alert-success bg-dark text-white" role="alert">
+            <div class="alert alert-success bg-dark text-white col-12" role="alert">
                 <h4 class="alert-heading">Cidades e Estados do Brasil</h4>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas id ullamcorper lorem. Quisque gravida tempor pulvinar. Curabitur lectus risus, elementum nec elit non, hendrerit consectetur orci. </p>
+                <p>
+                  Projeto realizado no Senac de Limeira: 
+                  <button type="button" class="btn btn-link">
+                      <a href="https://github.com/TeuSoares/cidades_brasil">Repositório GitHub</a>
+                  </button>
+                </p>
             </div>
             
             <div class="col-12"> 
@@ -382,6 +376,5 @@ $conexao->close();
 
         </div>
     </section>
-<!-- Creditos to olx.com.br -->
 </body>
 </html>

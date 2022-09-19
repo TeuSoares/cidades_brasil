@@ -1,5 +1,6 @@
 <?php
 include("conexao.php");
+$conexao = con_mysql();
 
 $estado2 = "";
 $cidade2 = "";
@@ -28,10 +29,12 @@ if(isset($_GET["codigo"])){             // Existe?
     FROM cidades as c
     INNER JOIN estados as e
         on c.uf = e.uf
-        WHERE c.codigo=('$codigo');";
-    $resultado = $conexao->query($sql);  
+        WHERE c.codigo=(:codigo);";
+    $resultado = $conexao->prepare($sql); 
+    $resultado->bindParam(':codigo', $codigo, PDO::PARAM_STR);
+    $resultado->execute();
 
-    while($linha = mysqli_fetch_array($resultado)){
+    while($linha = $resultado->fetch(PDO::FETCH_ASSOC)){
         $codigo = $linha["codigo"];
         $cidade = $linha["cidade"];
         $estado2 = $linha["estado"];
@@ -82,30 +85,24 @@ if(isset($_GET["codigo"])){             // Existe?
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Cidades do Brasil</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!--Import CSS-->
-    <link rel="stylesheet" href="css/bootstrap.css">
-    <link rel="stylesheet" href="style.css">
-    <script src="https://kit.fontawesome.com/c4c99ec63b.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
     <body>
-        <header>
-            <ul class="nav justify-content-center bg-dark py-2">
-                <li class="nav-item">
-                    <a class="nav-link active" href="index.php">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="estado-mapa.php">Mapa</a>
-                </li>
-            </ul>
-        </header> <!--FIM Header-->
+        <?php include("navbar.php"); ?>
         
         <section class="servicos pt-4 pb-2 text-center">
             <div class="container">
                 <div class="col-md-12">
                     <div class="row">
-                        <div class="alert alert-danger text-dark" role="alert">
+                        <div class="alert alert-danger text-dark col-12" role="alert">
                             <h1 class='display-4 mt-4 mb-4'>Cidade <?php echo $cidade; ?></h1> 
-                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas id ullamcorper lorem. Quisque gravida tempor pulvinar. Curabitur lectus risus, elementum nec elit non, hendrerit consectetur orci. </p>
+                            <p>
+                                Projeto realizado no Senac de Limeira: 
+                                <button type="button" class="btn btn-link">
+                                    <a href="https://github.com/TeuSoares/cidades_brasil">Repositório GitHub</a>
+                                </button>
+                            </p>
                         </div>
                         <div class="mt-2 mb-4">
                             <button type="button" class="btn btn-dark btn-sm bg-danger"><a class="text-white" href="cidade.php?codigo=<?php echo $codigo; ?>">Dados</a></button>
@@ -156,9 +153,5 @@ if(isset($_GET["codigo"])){             // Existe?
                 </div>     
             </div>
         </section>
-      
-
-        <script src="js/jquery.js"> </script>
-        <script src="js/bootstrap.js"></script>
     </body>
 </html>

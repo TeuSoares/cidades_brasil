@@ -1,5 +1,6 @@
 <?php
 include("conexao.php");
+$conexao = con_mysql();
 
 $estado2 = "";
 $cidade2 = "";
@@ -29,10 +30,12 @@ if(isset($_GET["codigo"])){             // Existe?
     FROM cidades as c
     INNER JOIN estados as e
         on c.uf = e.uf
-        WHERE c.codigo=('$codigo');";
-    $resultado = $conexao->query($sql);  
+        WHERE c.codigo=(:codigo);"; 
+    $resultado = $conexao->prepare($sql); 
+    $resultado ->bindParam(':codigo', $codigo, PDO::PARAM_STR);
+    $resultado->execute();
 
-    while($linha = mysqli_fetch_array($resultado)){
+    while($linha = $resultado->fetch(PDO::FETCH_ASSOC)){
         $codigo = $linha["codigo"];
         $cidade = $linha["cidade"];
         $estado2 = $linha["estado"];
@@ -77,69 +80,57 @@ if(isset($_GET["codigo"])){             // Existe?
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   <title>Cidades do Brasil</title>
-  <!-- MDB icon -->
-  <link rel="icon" href="img/mdb-favicon.ico" type="image/x-icon">
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
-  <!-- Bootstrap core CSS -->
-  <link rel="stylesheet" href="css/bootstrap.css">
-  <!-- Your custom styles (optional) -->
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-  <!-- Start your project here-->  
-        <header>
-            <ul class="nav justify-content-center bg-dark py-2">
-                <li class="nav-item">
-                    <a class="nav-link active" href="index.php">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="estado-mapa.php">Mapa</a>
-                </li>
-            </ul>
-        </header> <!--FIM Header-->
+    <?php include("navbar.php"); ?>
         
-        <section class="servicos pt-4 pb-2 text-center">
-            <div class="container">
-                <div class="col-md-12">
-                    <div class="row">
-                        <div class="alert alert-danger text-dark" role="alert">
-                            <h1 class='display-4 mt-4 mb-4'>Cidade <?php echo $cidade; ?></h1> 
-                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas id ullamcorper lorem. Quisque gravida tempor pulvinar. Curabitur lectus risus, elementum nec elit non, hendrerit consectetur orci. </p>
-                        </div>
-                        <div class="navbar navbar-light col-md-12">
-                            <h1 class='h1 mt-4 mb-4'>Gráfico Informativo</h1> 
-                            <div>
-                                <button type="button" class="btn btn-dark btn-sm bg-danger"><a class="text-white" href="cidade.php?codigo=<?php echo $codigo; ?>">Dados</a></button>
-                                <button type="button" class="btn btn-dark btn-sm bg-danger"><a class="text-white" href="grafico.php?codigo=<?php echo $codigo; ?>">Gráficos</a></button>
-                            </div>
-                        </div>
-                            <div class="col-12 d-flex">
-                                <div class="alert alert-danger" role="alert">
-                                    Crescimento população entre 2000 e 2010
-                                </div>
-                                <div class="alert alert-secondary" role="alert">
-                                    Percentutal de Homens
-                                </div>
-                                <div class="alert alert-warning" role="alert">
-                                    Percentutal de Mulheres
-                                </div>
-                                <div class="alert alert-success" role="alert">
-                                    Percentutal população da zona rural
-                                </div>
-                                <div class="alert alert-primary" role="alert">
-                                    Percentutal população da zona urbana
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <canvas id="horizontalBar"></canvas>
-                            </div>
+    <section class="servicos pt-4 pb-2 text-center">
+        <div class="container">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="alert alert-danger text-dark col-12" role="alert">
+                        <h1 class='display-4 mt-4 mb-4'>Cidade <?php echo $cidade; ?></h1> 
+                        <p>
+                            Projeto realizado no Senac de Limeira: 
+                            <button type="button" class="btn btn-link">
+                                <a href="https://github.com/TeuSoares/cidades_brasil">Repositório GitHub</a>
+                            </button>
+                        </p>
                     </div>
-                </div>     
-            </div>
-        </section>
-    <!-- End your project here-->
+                    <div class="navbar navbar-light col-md-12">
+                        <h1 class='h1 mt-4 mb-4'>Gráfico Informativo</h1> 
+                        <div>
+                            <button type="button" class="btn btn-dark btn-sm bg-danger"><a class="text-white" href="cidade.php?codigo=<?php echo $codigo; ?>">Dados</a></button>
+                            <button type="button" class="btn btn-dark btn-sm bg-danger"><a class="text-white" href="grafico.php?codigo=<?php echo $codigo; ?>">Gráficos</a></button>
+                        </div>
+                    </div>
+                        <div class="col-12 d-flex">
+                            <div class="alert alert-danger" role="alert">
+                                Crescimento população entre 2000 e 2010
+                            </div>
+                            <div class="alert alert-secondary" role="alert">
+                                Percentutal de Homens
+                            </div>
+                            <div class="alert alert-warning" role="alert">
+                                Percentutal de Mulheres
+                            </div>
+                            <div class="alert alert-success" role="alert">
+                                Percentutal população da zona rural
+                            </div>
+                            <div class="alert alert-primary" role="alert">
+                                Percentutal população da zona urbana
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <canvas id="horizontalBar"></canvas>
+                        </div>
+                </div>
+            </div>     
+        </div>
+    </section>
 
     <!-- jQuery -->
     <script type="text/javascript" src="mdb/js/jquery.min.js"></script>
