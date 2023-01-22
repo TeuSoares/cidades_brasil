@@ -77,7 +77,7 @@ Acessando o projeto 👇
 
 ## Links
 
-* Deploy do projeto: https://mateussoares.com.br/cidadesBrasil/
+* Apresentação no YouTube: https://www.youtube.com/watch?v=7xbjR6AHlX8
 
 ## Autor
 
